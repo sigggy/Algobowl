@@ -38,7 +38,7 @@ def main():
             continue
         print(f"Generating puzzle of size {r}x{c}...")
         puzzle = generate_akari_puzzle(r, c, gray_ratio=0.2)
-        save_puzzle_to_file(puzzle, f'puzzles/akari_puzzle<{r}x{c}>.txt') # TODO: save puzzles to a unique file name
+        save_puzzle_to_file(puzzle, f'puzzles/akari_puzzle{r}x{c}.txt') # TODO: save puzzles to a unique file name
 
 if __name__ == "__main__":
     main()
