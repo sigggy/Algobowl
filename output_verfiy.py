@@ -2,13 +2,14 @@
 import sys
 import os
 from typing import List, Tuple
+import copy
 
 def get_input_data() -> Tuple[List[int], List[List[str]]]:
     lines = sys.stdin.read().splitlines()
-    grid_dems = list(map(int, lines[0].strip().split()))
+    grid_dims = list(map(int, lines[0].strip().split()))
     grid = [list(line.strip()) for line in lines[1:] if line.strip()]
     
-    return grid_dems, grid
+    return grid_dims, grid
 
 def get_unique_output_path() -> str:
     os.makedirs("outputs", exist_ok=True)
@@ -36,21 +37,62 @@ def light_bulbs(grid: List[List[str]]) -> List[List[str]]:
                 grid[row][entry] = 'L'
     return grid
 
-def determine_violations1(grid: List[List[str]]) -> int:
-    return 1
+def apply_light_violations(grid: List[List[str]], grid_copy: List[List[str]], directions):
+    rows, cols = len(grid), len(grid[0])
+    # Iterate through each cell in the grid
+    for row in range(rows):
+        for col in range(cols):
+            if grid[row][col] == 'L':
+                # For each light, check all four directions
+                for direction in directions.values():
+                    dr, dc = direction
+                    r, c = row + dr, col + dc
+                    while 0 <= r < rows and 0 <= c < cols:
+                        if grid[r][c] != '.':
+                            if grid[r][c] == 'L':
+                                grid_copy[r][c] = 'V'
+                            break
+                        r += dr
+                        c += dc
 
-def determine_violations2(grid: List[List[str]]) -> int:
-    return 1
+def apply_numeric_violations(grid: List[List[str]], grid_copy: List[List[str]], directions) -> None:
+    rows, cols = len(grid), len(grid[0])
+    # Iterate through each cell in the grid
+    for row in range(rows):
+        for col in range(cols):
+            if grid[row][col] != '.' and grid[row][col] != "L" and grid[row][col] != "X":
+                val = int(grid[row][col])
+                # For each light, check all four directions
+                count = 0
+                for direction in directions.values():
+                    dr, dc = direction
+                    r, c = row + dr, col + dc
+                    # Check only one tile over
+                    if 0 <= r < rows and 0 <= c < cols:
+                        if grid[r][c] == 'L':
+                            count += 1
+                # If the count of lights is not equal to the expected value, mark as violation
+                if count != val:
+                    grid_copy[row][col] = 'V'
+                    
 
-def determine_violations3(grid: List[List[str]]) -> int:
-    return 1
+def determine_violations(grid: List[List[str]]) -> int:
+    grid_copy = copy.deepcopy(grid)
+    directions = {
+        'left': (0, -1),
+        'right': (0, 1),
+        'up': (-1, 0),
+        'down': (1, 0)
+    }
+    apply_light_violations(grid, grid_copy, directions)
+    apply_numeric_violations(grid, grid_copy, directions)
+    return sum(row.count('V') for row in grid_copy)
+
 
 def main() -> None:
-    grid_dems, grid = get_input_data()
-    violations = 0 
-    violations += determine_violations1(lit_grid)
-    violations += determine_violations2(lit_grid)
-    violations += determine_violations3(lit_grid)
+    grid_dims, grid = get_input_data()
+    violations = determine_violations(grid)
+    print(violations)
 
 
 if __name__ == "__main__":
