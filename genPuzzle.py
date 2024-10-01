@@ -44,8 +44,10 @@ def main():
             print(f"This is not a valid puzzle") # make sure we don't fuck up
             continue
         print(f"Generating puzzle of size {r}x{c}...")
-        puzzle = generate_akari_puzzle(r, c, gray_ratio=0.2, seed=seed)
-        save_puzzle_to_file(puzzle, f'inputs/akari_puzzle<{r}x{c}>{seed}.txt') # write puzzle with seed
+
+        puzzle = generate_akari_puzzle(r, c, gray_ratio=0.2)
+        save_puzzle_to_file(puzzle, f'puzzles/akari_puzzle{r}x{c}seed={seed}.txt') # TODO: save puzzles to a unique file name
+
 
 if __name__ == "__main__":
     main()
