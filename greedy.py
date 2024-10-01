@@ -95,6 +95,7 @@ def greedy_alt_row_col(board):
         for i in range(num_rows):
             greedy(board, i, num + j)
 
+
 def main():
     grid_dems, grid = get_input_data(sys.argv[1])
     grid = light_bulbs(grid)
