@@ -25,7 +25,7 @@ def write_output(grid: List[List[str]], violations: int) -> None:
     with open(output_path, 'w') as file:
         file.write(str(violations) + '\n')
         for row in grid:
-            row_to_write = " ".join(row)
+            row_to_write = ''.join(row)
             file.write(row_to_write + '\n')
     print(f"Output written to: {output_path}")
 
