@@ -1,20 +1,26 @@
 import random
 import numpy as np
 
-def generate_akari_puzzle(r, c, gray_ratio=0.2): # TODO: seed puzzles
+def generate_akari_puzzle(r, c, gray_ratio=0.2, seed=None):
+    assert 1 <= r * c <= 10**5, "Grid size must satisfy 1 ≤ r × c ≤ 10^5"
+
+    # Create a local random generator instance with the given seed
+    rng = random.Random(seed)
+
     grid = np.full((r, c), '.', dtype=str)
         
     num_gray = int(gray_ratio * r * c)
-    gray_positions = random.sample(range(r * c), num_gray)
+    all_positions = list(range(r * c))
+    gray_positions = rng.sample(all_positions, num_gray)
         
     for pos in gray_positions:
         row, col = divmod(pos, c)
         grid[row, col] = 'X'
         
     for pos in gray_positions:
-        if random.random() < 0.3:
+        if rng.random() < .3:
             row, col = divmod(pos, c)
-            grid[row, col] = str(random.randint(0, 4))
+            grid[row, col] = str(rng.randint(0, 4))
         
     return [''.join(row) for row in grid]
 
@@ -33,12 +39,15 @@ def main():
     ]
     
     for r, c in puzzle_sizes:
+        seed = random.random() * 10**5 # get large random seed
         if r * c > 10**5:
             print(f"This is not a valid puzzle") # make sure we don't fuck up
             continue
         print(f"Generating puzzle of size {r}x{c}...")
+
         puzzle = generate_akari_puzzle(r, c, gray_ratio=0.2)
-        save_puzzle_to_file(puzzle, f'puzzles/akari_puzzle{r}x{c}.txt') # TODO: save puzzles to a unique file name
+        save_puzzle_to_file(puzzle, f'puzzles/akari_puzzle{r}x{c}seed={seed}.txt') # TODO: save puzzles to a unique file name
+
 
 if __name__ == "__main__":
     main()
