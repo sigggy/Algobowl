@@ -18,9 +18,8 @@ def generate_akari_puzzle(r, c, gray_ratio=0.2, seed=None):
         grid[row, col] = 'X'
         
     for pos in gray_positions:
-        if rng.random() < .3:
-            row, col = divmod(pos, c)
-            grid[row, col] = str(rng.randint(0, 4))
+        row, col = divmod(pos, c)
+        grid[row, col] = str(rng.randint(0, 2))
         
     return [''.join(row) for row in grid]
 
@@ -33,7 +32,7 @@ def save_puzzle_to_file(puzzle, filename):
 def main():
     
     puzzle_sizes = [
-        (312, 316), 
+        (316, 316), 
     ]
     
     for r, c in puzzle_sizes:
@@ -44,7 +43,7 @@ def main():
         print(f"Generating puzzle of size {r}x{c}...")
 
         puzzle = generate_akari_puzzle(r, c, gray_ratio=0.2)
-        save_puzzle_to_file(puzzle, f'inputs/akari_puzzle{r}x{c}seed={seed}.txt') # TODO: save puzzles to a unique file name
+        save_puzzle_to_file(puzzle, f'inputs/nasty_puzzle{r}x{c}seed={seed}.txt') # TODO: save puzzles to a unique file name
 
 
 if __name__ == "__main__":
