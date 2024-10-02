@@ -3,8 +3,6 @@ import sys
 import copy
 from typing import List, Tuple
 
-
-
 def get_input_data(file_path: str) -> Tuple[List[int], List[List[str]]]:
     with open(file_path, 'r') as file:
         lines = file.read().splitlines()  # Read all lines from the file
@@ -12,7 +10,6 @@ def get_input_data(file_path: str) -> Tuple[List[int], List[List[str]]]:
     grid = [list(line.strip()) for line in lines[1:] if line.strip()]  # Convert each line into a list of characters
     
     return grid_dems, grid
-
 
 def print_grid(grid: List[List[str]]) -> None:
     for row in grid:
