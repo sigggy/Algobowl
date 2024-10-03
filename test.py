@@ -1,20 +1,29 @@
+# flake8: noqa
 from output_verifier import *
 from bowl import write_output, light_bulbs
 import numpy as np
 import random
 
 class number_tile:
-    def __init__(self, ):
-        self.name = name
-        self.age = age
-        self.department = department
+    def __init__(self,x_pos, y_pos ):
+        self.i = x_pos
+        self.j = y_pos
+        self.adjacent_lights = []
+
+    def pop_light():
+        pass
 
 
 class number_tile_light:
-    def __init__(self, ):
-        self.name = name
-        self.age = age
-        self.department = department
+    def __init__(self, is_lit):
+        self.is_lit = is_lit
+        self.top_collisions = []
+        self.bottom_collisions = []
+        self.right_collisions = []
+        self.left_collisions = []
+
+    def rebalance_light(): 
+        pass
 
 
 def illuminate_from_light(light_map, i , j):

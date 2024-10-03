@@ -180,7 +180,7 @@ def validate_violations(assumed_violations, grid):
         print("False")
         print("There is a violation mismatch")
         print(f'The graph report {assumed_violations} violations')
-        print(f'Out verifier fround {calculated_violations} violations')
+        print(f'Out verifier found {calculated_violations} violations')
         print("The Graph is Invalid")
         print("---------------------------------------------------------------------")
         exit(1)
