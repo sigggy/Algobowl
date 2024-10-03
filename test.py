@@ -10,20 +10,22 @@ class number_tile:
         self.j = y_pos
         self.adjacent_lights = []
 
-    def pop_light():
+    def pop_light(self, ):
         pass
 
 
 class number_tile_light:
     def __init__(self, is_lit):
         self.is_lit = is_lit
-        self.top_collisions = []
-        self.bottom_collisions = []
-        self.right_collisions = []
-        self.left_collisions = []
+        self.neighbors = []
+        self.collisions = 0 
 
-    def rebalance_light(): 
+    def rebalance_light(self, ): 
         pass
+
+    def find_collisions(self, ):
+
+
 
 
 def illuminate_from_light(light_map, i , j):
