@@ -187,6 +187,9 @@ def update_map(lightMap, map):
             if lightMap[i][j] and not lightMap[i][j].is_lit:
                 map[i][j] = '.'
                 continue 
+
+            if lightMap[i][j]:
+                map[i][j] = 'L'
           
 
 
@@ -196,8 +199,6 @@ def eliminate_collisions(nummap):
     for number in nums_list:
         number.pop_light()
 
-    #for number in nums_list:
-        #number.pop_light()
     
 
 
@@ -212,10 +213,12 @@ def main():
     nummap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
     map = find_important_squares(retMap, lightmap, nummap)
     find_collisions(retMap, map, nummap, lightmap)
-    printer(lightmap, nummap, retMap, map)
+    #printer(lightmap, nummap, retMap, map)
     eliminate_collisions(nummap)
     update_map(lightmap, map)
-    printer(lightmap, nummap, retMap, map)
+    #printer(lightmap, nummap, retMap, map)
+    violations = determine_violations(map)
+    #write_output(map, violations)
 
 
 
