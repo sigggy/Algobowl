@@ -12,6 +12,12 @@ class number_tile:
         self.adjacent_lights = []
 
     def pop_light(self, ):
+
+        for light in self.adjacent_lights:
+            if not light.is_lit:
+                print(f' this light is not lit but still adjacent {light}')
+                self.adjacent_lights.remove(light)
+
         if len(self.adjacent_lights) == self.num:
             return 
 
@@ -38,7 +44,7 @@ class number_tile:
                 
     
     def __str__(self) -> str:
-        return f'{self.num} ({self.i},{self.j})'
+        #return f'{self.num} ({self.i},{self.j})'
         return f'{self.num}'
 
 
@@ -64,7 +70,7 @@ class number_tile_light:
                 print(len(collision.neighbors))
                 print()
         self.neighbors = []
-        print(f"Rebalanced light at ({self.i}, {self.j}) and removed all neighbors.")
+        print(f"Rebalanced light at ({self.i}, {self.j}) and removed all neighbors.")        
         print()
         print()
 

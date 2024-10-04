@@ -82,6 +82,7 @@ def find_neigh_num(nummap, lightmap, i, j):
         if 0 <= r < len(lightmap) and 0 <= c < len(lightmap[0]):
             if lightmap[r][c]:
                 nummap[i][j].adjacent_lights.append(lightmap[r][c])
+ 
 
 def find_collisions(board, retMap, nummap, lightmap):
     important_nums = ['1', '2', '3', '4']
@@ -176,8 +177,8 @@ def eliminate_collisions(nummap):
     for number in nums_list:
         number.pop_light()
 
-    for number in nums_list:
-        number.pop_light()
+    #for number in nums_list:
+        #number.pop_light()
     
 
 
