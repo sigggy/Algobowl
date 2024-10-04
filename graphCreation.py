@@ -75,13 +75,25 @@ def find_neigh_num(nummap, lightmap, i, j):
         'down': (1, 0)
     }
 
+    adjacent_light_count = 0 
+
+    print(f' numx {nummap[i][j]}')
     for direction in directions.values():
         dr, dc = direction
         r, c = i + dr, j + dc
                     # Check only one tile over
         if 0 <= r < len(lightmap) and 0 <= c < len(lightmap[0]):
             if lightmap[r][c]:
+                adjacent_light_count += 1
+                print(f' lightx {lightmap[r][c]}')
                 nummap[i][j].adjacent_lights.append(lightmap[r][c])
+
+    print(f' count {adjacent_light_count} count {len(nummap[i][j].adjacent_lights)}')
+    if adjacent_light_count < nummap[i][j].num:
+        print(f'This tile is generating invalid lights {nummap[i][j].adjacent_lights}')
+        for light in nummap[i][j].adjacent_lights:
+            print(f' lighty {light}')
+            light.is_valid = False
  
 
 def find_collisions(board, retMap, nummap, lightmap):
@@ -153,18 +165,24 @@ def printer(lightmap, nummap, retMap, map):
     print()
 
 def get_nums(nummap):
-    nums_list = list()
+    nums_list = []
     for i in range(len(nummap)):
         for j in range(len(nummap[0])):
             if nummap[i][j]:
                 nums_list.append(nummap[i][j])
 
-    # Return a new shuffled version of nums_list
-    return random.sample(nums_list, len(nums_list))
+    # Sort nums_list by `num` attribute in descending order
+    sorted_nums_list = sorted(nums_list, key=lambda x: x.num, reverse=True)
+
+    return sorted_nums_list
 
 def update_map(lightMap, map):
     for i in range (len(map)):
         for j in range(len(map[0])):
+            if lightMap[i][j] and not lightMap[i][j].is_valid:
+                map[i][j] = '.'
+                continue 
+
             if lightMap[i][j] and not lightMap[i][j].is_lit:
                 map[i][j] = '.'
                 continue 

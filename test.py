@@ -14,8 +14,8 @@ class number_tile:
     def pop_light(self, ):
 
         for light in self.adjacent_lights:
-            if not light.is_lit:
-                print(f' this light is not lit but still adjacent {light}')
+            if not light.is_valid:
+                print(f' this light is invalid {light}')
                 self.adjacent_lights.remove(light)
 
         if len(self.adjacent_lights) == self.num:
@@ -53,6 +53,7 @@ class number_tile_light:
         self.i = i
         self.j = j
         self.is_lit = is_lit
+        self.is_valid = True
         self.neighbors = []
         self.collisions = 0
 

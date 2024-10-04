@@ -1,3 +1,25 @@
+ numx 2
+ lightx (1, 1)
+ lightx (0, 0)
+ lightx (0, 2)
+ count 3 count 3
+ numx 1
+ lightx (1, 1)
+ lightx (3, 1)
+ lightx (2, 0)
+ lightx (2, 2)
+ count 4 count 4
+ numx 2
+ lightx (2, 3)
+ lightx (4, 3)
+ lightx (3, 2)
+ lightx (3, 4)
+ count 4 count 4
+ numx 3
+ lightx (1, 4)
+ lightx (3, 4)
+ lightx (2, 3)
+ count 3 count 3
 (0, 0) None (2, 0) None None 
 None (1, 1) None (3, 1) None 
 (0, 2) None (2, 2) (3, 2) None 
@@ -46,18 +68,18 @@ light map at (3, 4) with 0 collisions
 
 
 None None None None None 
-4 None 4 None None 
+2 None 1 None None 
 None None None None None 
 None None None 2 None 
 None None 3 None None 
 
 
-light map at 4
+light map at 2
  -adajcent at (1, 1)
  -adajcent at (0, 0)
  -adajcent at (0, 2)
 
-light map at 4
+light map at 1
  -adajcent at (1, 1)
  -adajcent at (3, 1)
  -adajcent at (2, 0)
@@ -79,23 +101,31 @@ light map at 3
 
 
 . . . X . 
-4 . 4 . . 
+2 . 1 . . 
 . . . . . 
 . . . 2 . 
 . . 3 . . 
 
 ! . ! X . 
-4 ! 4 ! . 
+2 ! 1 ! . 
 ! . ! ! . 
 . . ! 2 ! 
 . ! 3 ! . 
 
 3
-Removed self (3, 2) from neighbor (2, 2)
+Removed self (0, 2) from neighbor (2, 2)
 2
 
+3
+Removed self (0, 2) from neighbor (3, 2)
 2
-Removed self (3, 2) from neighbor (0, 2)
+
+Rebalanced light at (0, 2) and removed all neighbors.
+
+
+Removed light: (0, 2)
+2
+Removed self (3, 2) from neighbor (2, 2)
 1
 
 1
@@ -106,16 +136,14 @@ Rebalanced light at (3, 2) and removed all neighbors.
 
 
 Removed light: (3, 2)
-2
-Removed self (2, 3) from neighbor (2, 2)
 1
+Removed self (2, 3) from neighbor (2, 2)
+0
 
 Rebalanced light at (2, 3) and removed all neighbors.
 
 
 Removed light: (2, 3)
-num 4 cannot be satisfied
-Removed light: (1, 1)
 1
 Removed self (1, 1) from neighbor (1, 4)
 0
@@ -123,31 +151,28 @@ Removed self (1, 1) from neighbor (1, 4)
 Rebalanced light at (1, 1) and removed all neighbors.
 
 
-Removed light: (0, 0)
+Removed light: (1, 1)
 1
-Removed self (0, 0) from neighbor (2, 0)
+Removed self (2, 0) from neighbor (0, 0)
 0
 
-Rebalanced light at (0, 0) and removed all neighbors.
+Rebalanced light at (2, 0) and removed all neighbors.
 
 
-Removed light: (0, 2)
-1
-Removed self (0, 2) from neighbor (2, 2)
-0
-
-Rebalanced light at (0, 2) and removed all neighbors.
+Removed light: (2, 0)
+Rebalanced light at (3, 1) and removed all neighbors.
 
 
+Removed light: (3, 1)
 (0, 0) None (2, 0) None None 
 None (1, 1) None (3, 1) None 
 (0, 2) None (2, 2) (3, 2) None 
 None None (2, 3) None (4, 3) 
 None (1, 4) None (3, 4) None 
 
-light map at (0, 0) with 1 collisions
+light map at (0, 0) with 0 collisions
 
-light map at (2, 0) with 0 collisions
+light map at (2, 0) with 1 collisions
 
 
 light map at (1, 1) with 1 collisions
@@ -155,11 +180,11 @@ light map at (1, 1) with 1 collisions
 light map at (3, 1) with 0 collisions
 
 
-light map at (0, 2) with 1 collisions
+light map at (0, 2) with 2 collisions
 
 light map at (2, 2) with 0 collisions
 
-light map at (3, 2) with 3 collisions
+light map at (3, 2) with 2 collisions
 
 
 light map at (2, 3) with 1 collisions
@@ -173,18 +198,17 @@ light map at (3, 4) with 0 collisions
 
 
 None None None None None 
-4 None 4 None None 
+2 None 1 None None 
 None None None None None 
 None None None 2 None 
 None None 3 None None 
 
 
-light map at 4
-
-light map at 4
+light map at 2
  -adajcent at (1, 1)
- -adajcent at (3, 1)
- -adajcent at (2, 0)
+ -adajcent at (0, 0)
+
+light map at 1
  -adajcent at (2, 2)
 
 
@@ -201,13 +225,13 @@ light map at 3
 
 
 . . . X . 
-4 . 4 . . 
+2 . 1 . . 
 . . . . . 
 . . . 2 . 
 . . 3 . . 
 
-. . ! X . 
-4 . 4 ! . 
+! . . X . 
+2 . 1 . . 
 . . ! . . 
 . . . 2 ! 
 . ! 3 ! . 
