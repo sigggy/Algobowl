@@ -3,7 +3,7 @@ import numpy as np
 from output_verifier import *
 from bowl import write_output, light_bulbs
 import copy
-from test import *
+from graph import *
 import random
 
 def printer(lightmap, nummap, retMap, map):
@@ -78,8 +78,7 @@ def find_important_squares(board, lightmap, nummap):
     for i in range(len(board)):
         for j in range(len(board[0])):
             if board[i][j] in important_nums:
-                retMap[i][j] = number_tile(j, i, board[i][j])
-                nummap[i][j] = retMap[i][j]
+                nummap[i][j] = number_tile(j, i, board[i][j])
                 for direction in directions.values():
                     dr, dc = direction
                     r, c = i + dr, j + dc
@@ -162,8 +161,6 @@ def find_collisions(board, retMap, nummap, lightmap):
                 find_neigh_num(nummap, lightmap, i, j)
             if retMap[i][j] == "!":
                 find_neighbors_light(board, lightmap, i, j)
-                
-
 
 def get_nums(nummap):
     nums_list = []
@@ -190,21 +187,12 @@ def update_map(lightMap, map):
 
             if lightMap[i][j]:
                 map[i][j] = 'L'
-          
-
 
 def eliminate_collisions(nummap):
     nums_list = get_nums(nummap)
 
     for number in nums_list:
         number.pop_light()
-
-    
-
-
-
-
-
 
 def main():
 
@@ -218,15 +206,7 @@ def main():
     update_map(lightmap, map)
     #printer(lightmap, nummap, retMap, map)
     violations = determine_violations(map)
-    #write_output(map, violations)
-
-
-
-
-
-
-    
-
+    write_output(map, violations)
 
 if __name__ == "__main__":
     main()

@@ -112,6 +112,7 @@ def validate_illuminated_cells(grid: List[List[str]], r: int, c: int) -> List[Li
 
 def apply_light_violations(grid: List[List[str]], grid_copy: List[List[str]], directions):
     rows, cols = len(grid), len(grid[0])
+    count = 0
     # Iterate through each cell in the grid
     for row in range(rows):
         for col in range(cols):
@@ -124,9 +125,11 @@ def apply_light_violations(grid: List[List[str]], grid_copy: List[List[str]], di
                         if grid[r][c] != '.':
                             if grid[r][c] == 'L':
                                 grid_copy[r][c] = 'V'
+                                count += 1
                             break
                         r += dr
                         c += dc
+    print(f'light violation count: {count}')
 
 def apply_numeric_violations(grid: List[List[str]], grid_copy: List[List[str]], directions) -> None:
     rows, cols = len(grid), len(grid[0])
