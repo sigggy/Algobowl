@@ -90,6 +90,30 @@ light map at 3 (2,4)
 . . ! 2 (3,3) ! 
 . ! 3 (2,4) ! . 
 
+3
+Removed self (3, 2) from neighbor (2, 2)
+2
+
+2
+Removed self (3, 2) from neighbor (0, 2)
+1
+
+1
+Removed self (3, 2) from neighbor (3, 1)
+0
+
+Rebalanced light at (3, 2) and removed all neighbors.
+
+
+Removed light: (3, 2)
+2
+Removed self (2, 3) from neighbor (2, 2)
+1
+
+Rebalanced light at (2, 3) and removed all neighbors.
+
+
+Removed light: (2, 3)
 num 4 (0,1) cannot be satisfied
 Removed light: (1, 1)
 1
@@ -108,37 +132,13 @@ Rebalanced light at (0, 0) and removed all neighbors.
 
 
 Removed light: (0, 2)
-3
+1
 Removed self (0, 2) from neighbor (2, 2)
-2
-
-3
-Removed self (0, 2) from neighbor (3, 2)
-2
+0
 
 Rebalanced light at (0, 2) and removed all neighbors.
 
 
-2
-Removed self (3, 2) from neighbor (2, 2)
-1
-
-1
-Removed self (3, 2) from neighbor (3, 1)
-0
-
-Rebalanced light at (3, 2) and removed all neighbors.
-
-
-Removed light: (3, 2)
-1
-Removed self (2, 3) from neighbor (2, 2)
-0
-
-Rebalanced light at (2, 3) and removed all neighbors.
-
-
-Removed light: (2, 3)
 num 4 (0,1) cannot be satisfied
 (0, 0) None (2, 0) None None 
 None (1, 1) None (3, 1) None 
@@ -156,11 +156,11 @@ light map at (1, 1) with 1 collisions
 light map at (3, 1) with 0 collisions
 
 
-light map at (0, 2) with 2 collisions
+light map at (0, 2) with 1 collisions
 
 light map at (2, 2) with 0 collisions
 
-light map at (3, 2) with 2 collisions
+light map at (3, 2) with 3 collisions
 
 
 light map at (2, 3) with 1 collisions
