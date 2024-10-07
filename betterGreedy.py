@@ -47,20 +47,15 @@ def greedy_smart(board): # takes empty board
             if lit_map[i][j] == 0:
                 board[i][j] = 'L'
                 illuminate_from_light(lit_map, i , j)
-    print(lit_map)
 
 def validate_board(board, order):
     lit_map = np.zeros((len(board), len(board[0])))
 
     create_lit_map(lit_map, board)
 
-    print(lit_map)
-
     for i, j in order:
         if lit_map[i][j] == 0:
-            print(f'before: {board[i][j]}')
             board[i][j] = 'L'
-            print(f'after: {board[i][j]}')
             illuminate_from_light(lit_map, i , j)
 
 def greedy_smart_random(board):
