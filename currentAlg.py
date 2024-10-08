@@ -7,6 +7,7 @@ import random
 from graphCreation import *
 from printer import *
 from betterGreedy import *
+import os
 
 def get_nums(nummap):
     nums_list = []
@@ -40,33 +41,38 @@ def get_locations(light_map):
 
 
 def main():
-    _, retMap = get_input_data(sys.argv[1]) # read input
+    input_dir = "actualInputs"
+    for filename in os.listdir(input_dir):
+        if filename.endswith(".txt"):
+            input_file_path = os.path.join(input_dir, filename)
+            best_violations = 1000000000
+            final_grid = []
+            for i in range(10):
+                _, retMap = get_input_data(input_file_path) # read input
 
-    # create graph
-    lightmap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
-    nummap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
-    map = find_important_squares(retMap, lightmap, nummap)
-    find_collisions(retMap, map, nummap, lightmap)
+                # create graph
+                lightmap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
+                nummap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
+                map = find_important_squares(retMap, lightmap, nummap)
+                find_collisions(retMap, map, nummap, lightmap)
 
-    num_list = get_nums(nummap) # get sorted list of nums
+                num_list = get_nums(nummap) # get sorted list of nums
 
-    simple_greedy(num_list)
+                simple_greedy(num_list)
 
-    update_map(lightmap, map)
+                update_map(lightmap, map)
 
 
-    violations = determine_violations(map)
-    print(f"violations before: {violations}")
+                violations = determine_violations(map)
+                    
+                validate_board(map, get_locations(lightmap))
 
-    validate_board(map, get_locations(lightmap))
-
-    print()
-    print(map)
-
-    violations = determine_violations(map)
-    print(f"violations after: {violations}")
-
-    write_output(map, violations)
+                violations = determine_violations(map)
+                if violations < best_violations:
+                    best_violations = violations
+                    final_grid = map
+            
+            write_output(final_grid, best_violations, filename)
 
 if __name__ == "__main__":
     main()

@@ -3,25 +3,22 @@ import sys
 import os
 from typing import List, Tuple
 
-def get_input_data() -> Tuple[List[int], List[List[str]]]:
-    lines = sys.stdin.read().splitlines()
+def get_input_data(filename: str) -> Tuple[List[int], List[List[str]]]:
+    # Open the file and read its lines
+    with open(filename, 'r') as file:
+        lines = file.read().splitlines()  # Read lines from the file
+    # Parse the dimensions of the grid
     grid_dems = list(map(int, lines[0].strip().split()))
+    # Parse the grid content
     grid = [list(line.strip()) for line in lines[1:] if line.strip()]
-    
     return grid_dems, grid
 
-def get_unique_output_path() -> str:
-    os.makedirs("outputs", exist_ok=True)
-    
-    file_number = 1
-    while True:
-        output_path = os.path.join("outputs", f"output{file_number}.txt")
-        if not os.path.exists(output_path):
-            return output_path
-        file_number += 1
+def get_unique_output_path(filename) -> str:
+    os.makedirs("actualOutputs", exist_ok=True)
+    return os.path.join("actualOutputs", f"output_{filename}.txt")
 
-def write_output(grid: List[List[str]], violations: int) -> None:
-    output_path = get_unique_output_path()
+def write_output(grid: List[List[str]], violations: int, filename) -> None:
+    output_path = get_unique_output_path(filename)
     with open(output_path, 'w') as file:
         file.write(str(violations) + '\n')
         for row in grid:
