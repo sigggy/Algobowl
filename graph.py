@@ -42,6 +42,7 @@ class number_tile:
         newconfig = random.choice(self.configs)
         self.configure(newconfig)
         self.configs.add(oldConfig)
+        return newconfig
 
     def get_num_lit_lights(self):
         return len(self.get_lit_lights)

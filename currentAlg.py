@@ -1,3 +1,4 @@
+# flake8: noqa
 import numpy as np
 from output_verifier import *
 from bowl import write_output, light_bulbs
@@ -28,44 +29,34 @@ def remove_random_Ls(grid, num_to_remove=5):
     
     return grid
 
-def generate_neighbor(retMap):
-    """Generate a neighboring state by removing and adding lights."""
-    # Remove 5 random lights
-    retMap = remove_random_Ls(retMap)
-    lightmap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
-    nummap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
-    map = find_important_squares(retMap, lightmap, nummap)
-    find_collisions(retMap, map, nummap, lightmap)
-    num_list = get_nums(nummap) # get sorted list of nums
-    simple_greedy(num_list)
-    update_map(lightmap, map)
-    validate_board(map, get_locations(lightmap)) 
-    return map
+def generate_neighbor(light):
+    before_config = light.get_curr_config()
+    before = light.get_vio_for_light()
+    after_config = light.alter_config()
+    after = light.get_vio_for_light()
+
+    return after - before, after_config, before_config
 
 
-def simulated_annealing(init_grid, T_initial, T_final, alpha):
-    current_state = init_grid
-    current_energy = determine_violations(current_state)
-    
-    # Initialize best state and energy
-    best_state = copy.deepcopy(current_state)
-    best_energy = current_energy
-    
-    energies = []
-    energies.append(current_energy)
-    
+def simulated_annealing(violations, num_list, T_initial, T_final, alpha):    
     T = T_initial
-    
+
     while T > T_final:
-        for _ in range(12000):  # Number of iterations at each temperature step
-            neighbor = generate_neighbor(current_state)
-            neighbor_energy = determine_violations(neighbor)
+        best_light = (None, None)
+        best_neighbor_energy = 0
+        for _ in range(100):  # Number of iterations at each temperature step
+            random_num = random.choice(num_list)
+            neighbor_energy, after_config, before_config = generate_neighbor(random_num)
 
             # Always take the lowest energy state (strict improvement)
-            if neighbor_energy < best_energy:  # If neighbor is better, update the best state
-                best_state = neighbor
+            if neighbor_energy < best_neighbor_energy:  # If neighbor is better, update the best state
+                best_light = (random_num, after_config)
                 best_energy = neighbor_energy
-                energies.append(best_energy)
+                
+            random_num.config(before_config)
+        
+        if best_light[0]:
+            best_light[0].config(best_light[1])
 
         T *= alpha  # Continue cooling down (optional since you're only taking best solutions)
 
@@ -107,37 +98,36 @@ def get_locations(light_map):
 def main():
     _, retMap = get_input_data(sys.argv[1]) # read input
 
+    
     # create graph
     lightmap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
     nummap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
     map = find_important_squares(retMap, lightmap, nummap)
-    find_collisions(retMap, map, nummap, lightmap)
+    num_list = find_collisions(retMap, map, nummap, lightmap)
 
-    num_list = get_nums(nummap) # get sorted list of nums
+    num_list_greedy = get_nums(nummap) # get sorted list of nums
 
-    simple_greedy(num_list)
+    simple_greedy(num_list_greedy)
 
     update_map(lightmap, map)
 
     violations = determine_violations(map)
+    print(f'Violations before annealing {violations}')
+    print(f'num list')
+    print(num_list)
+    simulated_annealing(violations, num_list, T_initial=100, T_final=1, alpha=0.95)
+
+    update_map(lightmap, map)
+
     validate_board(map, get_locations(lightmap))
 
+
+    print(f'Violations after annealing {violations}')
     violations = determine_violations(map)
+    print(f'Violations at the very end {violations}')
+
 
     write_output(map, violations)
-
-    # final_state = simulated_annealing(init_grid, 100, 1, 0.95)
-    # print(violations_holder)
-    # with open("test.txt", 'w') as file:
-    #     file.write(str(determine_violations(final_state)) + '\n')
-    #     for row in final_state:
-    #         row_to_write = ''.join(row)
-    #         file.write(row_to_write + '\n')
-    
-    
-
-    
-
 
 if __name__ == "__main__":
     main()

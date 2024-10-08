@@ -99,8 +99,11 @@ def find_collisions(board, retMap, nummap, lightmap): # return list of possible 
             if retMap[i][j] == "!":
                 find_neighbors_light(board, lightmap, i, j)
     remove_nums = []
+    print(f'num before removal')
+    print(nums)
     for num in nums:
-        if (num.num < len(num.adjacent_lights)):
+        print(f' number value {num.num} adj length {len(num.adjacent_lights)}')
+        if (num.num > len(num.adjacent_lights)):
             remove_nums.append(num)
             continue
         perm_list = [0 for _ in range(len(num.adjacent_lights))]
@@ -112,6 +115,9 @@ def find_collisions(board, retMap, nummap, lightmap): # return list of possible 
           
     for rem_num in remove_nums: # remove all values that can't be validated
         nums.remove(rem_num)
+
+    print(f'num after removal')
+    print(nums)
     return nums
 
 def update_map(lightMap, map):
