@@ -57,7 +57,7 @@ def simulated_annealing(init_grid, T_initial, T_final, alpha):
     T = T_initial
     
     while T > T_final:
-        for _ in range(100):  # Number of iterations at each temperature step
+        for _ in range(12000):  # Number of iterations at each temperature step
             neighbor = generate_neighbor(current_state)
             neighbor_energy = determine_violations(neighbor)
 
@@ -107,26 +107,24 @@ def get_locations(light_map):
 def main():
     _, retMap = get_input_data(sys.argv[1]) # read input
 
-    violations_holder = 10000000000
-    for i in range(10):
-        # create graph
-        lightmap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
-        nummap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
-        map = find_important_squares(retMap, lightmap, nummap)
-        find_collisions(retMap, map, nummap, lightmap)
+    # create graph
+    lightmap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
+    nummap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
+    map = find_important_squares(retMap, lightmap, nummap)
+    find_collisions(retMap, map, nummap, lightmap)
 
-        num_list = get_nums(nummap) # get sorted list of nums
+    num_list = get_nums(nummap) # get sorted list of nums
 
-        simple_greedy(num_list)
+    simple_greedy(num_list)
 
-        update_map(lightmap, map)
+    update_map(lightmap, map)
 
-        violations = determine_violations(map)
-        validate_board(map, get_locations(lightmap))
+    violations = determine_violations(map)
+    validate_board(map, get_locations(lightmap))
 
-        violations = determine_violations(map)
+    violations = determine_violations(map)
 
-        write_output(map, violations)
+    write_output(map, violations)
 
     # final_state = simulated_annealing(init_grid, 100, 1, 0.95)
     # print(violations_holder)

@@ -95,6 +95,7 @@ def find_collisions(board, retMap, nummap, lightmap): # return list of possible 
         for j in range(len(board[0])):
             if board[i][j] in important_nums:
                 nums.append(nummap[i][j])
+                find_neigh_num(nummap, lightmap, i, j)
             if retMap[i][j] == "!":
                 find_neighbors_light(board, lightmap, i, j)
     remove_nums = []
