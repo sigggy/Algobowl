@@ -52,11 +52,12 @@ def simulated_annealing(violations, num_list, T_initial, T_final, alpha):
             if neighbor_energy < best_neighbor_energy:  # If neighbor is better, update the best state
                 best_light = (random_num, after_config)
                 best_energy = neighbor_energy
-                
-            random_num.config(before_config)
+            # TODO  Not sure if this is right 
+            random_num.configure(before_config)
         
         if best_light[0]:
-            best_light[0].config(best_light[1])
+            # TODO Not sure if this is right 
+            best_light[0].configure(best_light[1])
 
         T *= alpha  # Continue cooling down (optional since you're only taking best solutions)
 

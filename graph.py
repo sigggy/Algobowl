@@ -22,7 +22,7 @@ class number_tile:
                 light.is_important = False
     
     def configure(self, config):
-        for light, i in enumerate(self.adjacent_lights()):
+        for i, light in enumerate(self.adjacent_lights):
             light.is_lit = config[i]
 
     def get_curr_config(self):
@@ -38,8 +38,10 @@ class number_tile:
 
     def alter_config(self):
         oldConfig = self.get_curr_config()
+        print(f' configs {self.configs}')
+        print(f' old config {oldConfig}')
         self.configs.remove(oldConfig)
-        newconfig = random.choice(self.configs)
+        newconfig = random.choice(list(self.configs))
         self.configure(newconfig)
         self.configs.add(oldConfig)
         return newconfig
