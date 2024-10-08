@@ -10,7 +10,7 @@ from betterGreedy import *
 import random
 import numpy as np
 
-def remove_random_Ls(grid, lightmap, num_to_remove=5):
+def remove_random_Ls(grid, num_to_remove=5):
     # Get all positions of "L" in the grid
     positions = [(i, j) for i in range(len(grid)) for j in range(len(grid[i])) if grid[i][j] == "L"]
     
@@ -25,47 +25,53 @@ def remove_random_Ls(grid, lightmap, num_to_remove=5):
     # Replace "L" with "."
     for i, j in positions_to_remove:
         grid[i][j] = "."
-        lightmap[i][j] = None
     
     return grid
 
-def generate_neighbor(map, lightmap):
+def generate_neighbor(retMap):
     """Generate a neighboring state by removing and adding lights."""
-    new_map = copy.deepcopy(map)
-    new_lightmap = copy.deepcopy(lightmap)
     # Remove 5 random lights
-    new_map = remove_random_Ls(new_map, new_lightmap)
-    validate_board(new_map, get_locations(new_lightmap))
-    return new_map
+    retMap = remove_random_Ls(retMap)
+    lightmap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
+    nummap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
+    map = find_important_squares(retMap, lightmap, nummap)
+    find_collisions(retMap, map, nummap, lightmap)
+    num_list = get_nums(nummap) # get sorted list of nums
+    simple_greedy(num_list)
+    update_map(lightmap, map)
+    validate_board(map, get_locations(lightmap))
+    return map
 
 
-def simulated_annealing(init_grid, T_initial, T_final, alpha, lightmap):
+def simulated_annealing(init_grid, T_initial, T_final, alpha):
     current_state = init_grid
     current_energy = determine_violations(current_state)
-    T = T_initial
+    
+    # Initialize best state and energy
+    best_state = copy.deepcopy(current_state)
+    best_energy = current_energy
+    
     energies = []
     energies.append(current_energy)
+    
+    T = T_initial
+    
     while T > T_final:
-        for _ in range(100):  # Number of iterations at each temperature
-            neighbor = generate_neighbor(current_state, lightmap)
+        for _ in range(100):  # Number of iterations at each temperature step
+            neighbor = generate_neighbor(current_state)
             neighbor_energy = determine_violations(neighbor)
 
-            # Acceptance criteria
-            if neighbor_energy < current_energy:  # If it's better, accept it
-                current_state = neighbor
-                current_energy = neighbor_energy
-                energies.append(current_energy)
-            else:
-                # Calculate acceptance probability
-                acceptance_probability = np.exp((current_energy - neighbor_energy) / T)
-                if random.random() < acceptance_probability:
-                    current_state = neighbor
-                    current_energy = neighbor_energy
-                    energies.append(current_energy)
-        T *= alpha  # Cool down
+            # Always take the lowest energy state (strict improvement)
+            if neighbor_energy < best_energy:  # If neighbor is better, update the best state
+                best_state = neighbor
+                best_energy = neighbor_energy
+                energies.append(best_energy)
+
+        T *= alpha  # Continue cooling down (optional since you're only taking best solutions)
 
     print(f"Energy min: {np.min(energies)}")
-    return current_state
+    return best_state
+
 
 def get_nums(nummap):
     nums_list = []
@@ -103,8 +109,6 @@ def main():
 
     violations_holder = 10000000000
     init_grid = []
-    init_lightmap = []
-    rand_int = random.randint(1,10)
     for i in range(10):
         # create graph
         lightmap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
@@ -125,10 +129,9 @@ def main():
 
         if violations < violations_holder:
             init_grid = map
-            init_lightmap = lightmap
             violations_holder = violations
 
-    final_state = simulated_annealing(init_grid, 100, 1, 0.95, init_lightmap)
+    final_state = simulated_annealing(init_grid, 100, 1, 0.95)
     print(violations_holder)
     with open("test.txt", 'w') as file:
         file.write(str(determine_violations(final_state)) + '\n')
