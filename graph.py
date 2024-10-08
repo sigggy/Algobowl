@@ -10,6 +10,7 @@ class number_tile:
         self.i = x_pos
         self.j = y_pos
         self.adjacent_lights = []
+        self.configs = []
 
     def get_lit_lights(self):
         return [light for light in self.adjacent_lights if light.is_lit]

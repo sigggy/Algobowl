@@ -108,7 +108,6 @@ def main():
     _, retMap = get_input_data(sys.argv[1]) # read input
 
     violations_holder = 10000000000
-    init_grid = []
     for i in range(10):
         # create graph
         lightmap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
@@ -127,17 +126,15 @@ def main():
 
         violations = determine_violations(map)
 
-        if violations < violations_holder:
-            init_grid = map
-            violations_holder = violations
+        write_output(map, violations)
 
-    final_state = simulated_annealing(init_grid, 100, 1, 0.95)
-    print(violations_holder)
-    with open("test.txt", 'w') as file:
-        file.write(str(determine_violations(final_state)) + '\n')
-        for row in final_state:
-            row_to_write = ''.join(row)
-            file.write(row_to_write + '\n')
+    # final_state = simulated_annealing(init_grid, 100, 1, 0.95)
+    # print(violations_holder)
+    # with open("test.txt", 'w') as file:
+    #     file.write(str(determine_violations(final_state)) + '\n')
+    #     for row in final_state:
+    #         row_to_write = ''.join(row)
+    #         file.write(row_to_write + '\n')
     
     
 

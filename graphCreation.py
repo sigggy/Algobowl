@@ -5,6 +5,7 @@ from bowl import write_output, light_bulbs
 import copy
 from graph import *
 import random
+from itertools import permutations
 
 def find_important_squares(board, lightmap, nummap):
     retMap = copy.deepcopy(board)
@@ -89,14 +90,23 @@ def find_neigh_num(nummap, lightmap, i, j):
 
 def find_collisions(board, retMap, nummap, lightmap):
     important_nums = ['1', '2', '3', '4']
-
+    nums = []
     for i in range(len(board)):
         for j in range(len(board[0])):
             if board[i][j] in important_nums:
                 find_neigh_num(nummap, lightmap, i, j)
+                nums.append(nummap[i][j])
             if retMap[i][j] == "!":
                 find_neighbors_light(board, lightmap, i, j)
-                
+    
+    for num in nums:
+        perm_list = [0 for _ in range(len(num.adjacent_lights))]
+        for i in range(num.num):
+            perm_list[i] = 1
+            num.configs = set((permutations(perm_list)))
+            num.configs.add(tuple([0 for _ in range(len(num.adjacent_lights))]))
+            print(num.configs)
+          
 
 def update_map(lightMap, map):
     for i in range (len(map)):
