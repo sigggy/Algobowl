@@ -15,7 +15,7 @@ def get_unique_output_path() -> str:
     
     file_number = 1
     while True:
-        output_path = os.path.join("outputs", f"output{file_number}.txt")
+        output_path = os.path.join("annealing_outputs", f"output{file_number}.txt")
         if not os.path.exists(output_path):
             return output_path
         file_number += 1

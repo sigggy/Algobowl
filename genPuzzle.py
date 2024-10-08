@@ -32,7 +32,7 @@ def save_puzzle_to_file(puzzle, filename):
 def main():
     
     puzzle_sizes = [
-        (316, 316), 
+        (20, 20), 
     ]
     
     for r, c in puzzle_sizes:
