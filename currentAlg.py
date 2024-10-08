@@ -39,7 +39,7 @@ def generate_neighbor(retMap):
     num_list = get_nums(nummap) # get sorted list of nums
     simple_greedy(num_list)
     update_map(lightmap, map)
-    validate_board(map, get_locations(lightmap))
+    validate_board(map, get_locations(lightmap)) 
     return map
 
 

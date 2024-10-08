@@ -21,6 +21,28 @@ class number_tile:
                 light.is_lit = False
                 light.is_important = False
     
+    def configure(self, config):
+        for light, i in enumerate(self.adjacent_lights()):
+            light.is_lit = config[i]
+
+    def get_curr_config(self):
+        return tuple([light.is_lit for light in self.adjacent_lights])
+
+    def get_vio_for_light(self):
+        lit_lights = self.get_lit_lights()
+        count = 0
+        count += (self.num == len(lit_lights))
+        for light in lit_lights:
+            count += sum(possVio.is_lit for possVio in light.neighbors)
+        return count
+
+    def alter_config(self):
+        oldConfig = self.get_curr_config()
+        self.configs.remove(oldConfig)
+        newconfig = random.choice(self.configs)
+        self.configure(newconfig)
+        self.configs.add(oldConfig)
+
     def get_num_lit_lights(self):
         return len(self.get_lit_lights)
 
