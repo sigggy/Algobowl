@@ -129,7 +129,7 @@ def apply_light_violations(grid: List[List[str]], grid_copy: List[List[str]], di
                             break
                         r += dr
                         c += dc
-    print(f'light violation count: {count}')
+    #print(f'light violation count: {count}')
 
 def apply_numeric_violations(grid: List[List[str]], grid_copy: List[List[str]], directions) -> None:
     rows, cols = len(grid), len(grid[0])
@@ -163,13 +163,13 @@ def determine_violations(grid: List[List[str]]) -> int:
     apply_light_violations(grid, grid_copy, directions)
     apply_numeric_violations(grid, grid_copy, directions)
     
-    print('\n' * 2)
-    print("Violation Grid")
-    print("---------------------------------------------------------------------")
-    print_grid(grid_copy)
-    print("---------------------------------------------------------------------")
+    # print('\n' * 2)
+    # print("Violation Grid")
+    # print("---------------------------------------------------------------------")
+    # print_grid(grid_copy)
+    # print("---------------------------------------------------------------------")
     violations =  sum(row.count('V') for row in grid_copy)
-    print('\n' * 2)
+    # print('\n' * 2)
     print("---------------------------------------------------------------------")
     print(f'{violations} violations were found in the output graph')
     print("---------------------------------------------------------------------")

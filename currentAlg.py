@@ -35,7 +35,7 @@ def generate_neighbor(map, lightmap):
     new_lightmap = copy.deepcopy(lightmap)
     # Remove 5 random lights
     new_map = remove_random_Ls(new_map, new_lightmap)
-    validate_board(new_map, get_locations(lightmap))
+    validate_board(new_map, get_locations(new_lightmap))
     return new_map
 
 
@@ -43,7 +43,8 @@ def simulated_annealing(init_grid, T_initial, T_final, alpha, lightmap):
     current_state = init_grid
     current_energy = determine_violations(current_state)
     T = T_initial
-
+    energies = []
+    energies.append(current_energy)
     while T > T_final:
         for _ in range(100):  # Number of iterations at each temperature
             neighbor = generate_neighbor(current_state, lightmap)
@@ -53,15 +54,17 @@ def simulated_annealing(init_grid, T_initial, T_final, alpha, lightmap):
             if neighbor_energy < current_energy:  # If it's better, accept it
                 current_state = neighbor
                 current_energy = neighbor_energy
+                energies.append(current_energy)
             else:
                 # Calculate acceptance probability
                 acceptance_probability = np.exp((current_energy - neighbor_energy) / T)
                 if random.random() < acceptance_probability:
                     current_state = neighbor
                     current_energy = neighbor_energy
-
+                    energies.append(current_energy)
         T *= alpha  # Cool down
 
+    print(f"Energy min: {np.min(energies)}")
     return current_state
 
 def get_nums(nummap):
@@ -98,8 +101,9 @@ def get_locations(light_map):
 def main():
     _, retMap = get_input_data(sys.argv[1]) # read input
 
-    violations_holder = []
+    violations_holder = 10000000000
     init_grid = []
+    init_lightmap = []
     rand_int = random.randint(1,10)
     for i in range(10):
         # create graph
@@ -118,13 +122,14 @@ def main():
         validate_board(map, get_locations(lightmap))
 
         violations = determine_violations(map)
-        violations_holder.append(violations)
 
-        if i + 1 == rand_int:
+        if violations < violations_holder:
             init_grid = map
-    print("BRUH")
+            init_lightmap = lightmap
+            violations_holder = violations
+
+    final_state = simulated_annealing(init_grid, 100, 1, 0.95, init_lightmap)
     print(violations_holder)
-    final_state = simulated_annealing(init_grid, 100, 1, 0.95, lightmap)
     with open("test.txt", 'w') as file:
         file.write(str(determine_violations(final_state)) + '\n')
         for row in final_state:
