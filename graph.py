@@ -38,12 +38,11 @@ class number_tile:
 
     def alter_config(self):
         oldConfig = self.get_curr_config()
-        print(f' configs {self.configs}')
-        print(f' old config {oldConfig}')
-        self.configs.remove(oldConfig)
+        if oldConfig in self.configs:
+            self.configs.remove(oldConfig)
         newconfig = random.choice(list(self.configs))
         self.configure(newconfig)
-        self.configs.add(oldConfig)
+        self.configs.add(oldConfig) # add config for possible backtracking
         return newconfig
 
     def get_num_lit_lights(self):

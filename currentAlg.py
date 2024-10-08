@@ -61,9 +61,6 @@ def simulated_annealing(violations, num_list, T_initial, T_final, alpha):
 
         T *= alpha  # Continue cooling down (optional since you're only taking best solutions)
 
-    print(f"Energy min: {np.min(energies)}")
-    return best_state
-
 
 def get_nums(nummap):
     nums_list = []
