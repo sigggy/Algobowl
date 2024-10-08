@@ -10,7 +10,12 @@ from betterGreedy import *
 import random
 import numpy as np
 
-def remove_random_Ls(grid, num_to_remove=5):
+def remove_random_Ls(grid, light_map, num_to_remove=5):
+
+    for i in range (len(light_map)):
+        for j in range(len(light_map[0])):
+            if light_map[i][j]:
+                grid[i][j] == 'L'
     # Get all positions of "L" in the grid
     positions = [(i, j) for i in range(len(grid)) for j in range(len(grid[i])) if grid[i][j] == "L"]
     
@@ -28,10 +33,10 @@ def remove_random_Ls(grid, num_to_remove=5):
     
     return grid
 
-def generate_neighbor(retMap):
+def generate_neighbor(retMap, light_map):
     """Generate a neighboring state by removing and adding lights."""
     # Remove 5 random lights
-    retMap = remove_random_Ls(retMap)
+    retMap = remove_random_Ls(retMap, light_map)
     lightmap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
     nummap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
     map = find_important_squares(retMap, lightmap, nummap)
@@ -43,7 +48,7 @@ def generate_neighbor(retMap):
     return map
 
 
-def simulated_annealing(init_grid, T_initial, T_final, alpha):
+def simulated_annealing(init_grid, T_initial, T_final, alpha, light_map):
     current_state = init_grid
     current_energy = determine_violations(current_state)
     
@@ -58,7 +63,7 @@ def simulated_annealing(init_grid, T_initial, T_final, alpha):
     
     while T > T_final:
         for _ in range(100):  # Number of iterations at each temperature step
-            neighbor = generate_neighbor(current_state)
+            neighbor = generate_neighbor(current_state, light_map)
             neighbor_energy = determine_violations(neighbor)
 
             # Always take the lowest energy state (strict improvement)
@@ -131,9 +136,9 @@ def main():
             init_grid = map
             violations_holder = violations
 
-    final_state = simulated_annealing(init_grid, 100, 1, 0.95)
+    final_state = simulated_annealing(init_grid, 100, 1, 0.95, lightmap)
     print(violations_holder)
-    with open("test.txt", 'w') as file:
+    with open(f'output_{sys.argv[1]}', 'w') as file:
         file.write(str(determine_violations(final_state)) + '\n')
         for row in final_state:
             row_to_write = ''.join(row)
