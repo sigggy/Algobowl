@@ -17,12 +17,13 @@ def find_important_squares(board, lightmap, nummap):
         'down': (1, 0)
     }
 
-    important_nums = ['1', '2', '3', '4']
+    important_nums = ['0', '1', '2', '3', '4']
 
     for i in range(len(board)):
         for j in range(len(board[0])):
             if board[i][j] in important_nums:
-                nummap[i][j] = number_tile(i, j, board[i][j])
+                if board[i][j] != '0':
+                    nummap[i][j] = number_tile(i, j, board[i][j])
                 for direction in directions.values():
                     dr, dc = direction
                     r, c = i + dr, j + dc
@@ -30,7 +31,10 @@ def find_important_squares(board, lightmap, nummap):
                     if 0 <= r < len(board) and 0 <= c < len(board[0]):
                         if board[r][c] == '.':
                             retMap[r][c] = '!'
-                            lightmap[r][c] = number_tile_light(True, c, r)
+                            if board[i][j] != '0':
+                                lightmap[r][c] = number_tile_light(True, r, c)
+                            else:
+                                lightmap[r][c] = number_tile_light(False, r, c) # if its a 0 start unlit
     return retMap
 
 def find_neighbors_light(retMap, lightmap, i, j):
@@ -99,10 +103,7 @@ def find_collisions(board, retMap, nummap, lightmap): # return list of possible 
             if retMap[i][j] == "!":
                 find_neighbors_light(board, lightmap, i, j)
     remove_nums = []
-    print(f'num before removal')
-    print(nums)
     for num in nums:
-        print(f' number value {num.num} adj length {len(num.adjacent_lights)}')
         if (num.num > len(num.adjacent_lights)):
             remove_nums.append(num)
             continue
@@ -111,13 +112,9 @@ def find_collisions(board, retMap, nummap, lightmap): # return list of possible 
             perm_list[i] = 1
         num.configs = set((permutations(perm_list)))
         num.configs.add(tuple([0 for _ in range(len(num.adjacent_lights))]))
-        print(num.configs)
           
     for rem_num in remove_nums: # remove all values that can't be validated
         nums.remove(rem_num)
-
-    print(f'num after removal')
-    print(nums)
     return nums
 
 def update_map(lightMap, map):
