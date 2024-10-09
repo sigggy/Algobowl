@@ -29,37 +29,51 @@ def remove_random_Ls(grid, num_to_remove=5):
     
     return grid
 
-def generate_neighbor(light):
-    before_config = light.get_curr_config()
-    before = light.get_vio_for_light()
-    after_config = light.alter_config()
-    after = light.get_vio_for_light()
+def generate_neighbor(grid):
+    new_grid = copy.deepcopy(grid)
 
-    return after - before, after_config, before_config
+    new_grid = add_random_Ls(new_grid)  
+    #new_grid = remove_random_Ls(new_grid)  
+
+    new_light_map = [[None for _ in range(len(new_grid[0]))] for _ in range(len(new_grid))]
+    new_nummap = [[None for _ in range(len(new_grid[0]))] for _ in range(len(new_grid))]
 
 
-def simulated_annealing(violations, num_list, T_initial, T_final, alpha):    
+    neighbor = find_important_squares(new_grid, new_light_map, new_nummap)  
+    num_list = find_collisions(new_grid, neighbor, new_nummap, new_light_map)
+    num_list_greedy = get_nums(new_nummap) 
+    simple_greedy(num_list_greedy)  
+    update_map(new_light_map, neighbor)  
+ 
+
+    validate_board(neighbor, get_locations(new_light_map)) 
+    violations = determine_violations(neighbor)
+
+    return neighbor, violations
+
+
+def simulated_annealing(violations, grid, T_initial, T_final, alpha):    
+    best = grid
+    best_eval = violations
+    current, current_eval = best, best_eval
     T = T_initial
+    scores = [best_eval]
 
-    while T > T_final:
-        best_light = (None, None)
-        best_neighbor_energy = 0
-        for _ in range(1000):  # Number of iterations at each temperature step
-            random_num = random.choice(num_list)
-            neighbor_energy, after_config, before_config = generate_neighbor(random_num)
+    for i in range(1):
+        t = T_initial / alpha 
 
-            # Always take the lowest energy state (strict improvement)
-            if neighbor_energy < best_neighbor_energy:  # If neighbor is better, update the best state
-                best_light = (random_num, after_config)
-                best_energy = neighbor_energy
-            # TODO  Not sure if this is right 
-            random_num.configure(before_config)
-        
-        if best_light[0]:
-            # TODO Not sure if this is right 
-            best_light[0].configure(best_light[1])
+        candidate, candidate_eval = generate_neighbor(current)
+        scores.append(candidate_eval)
+        if candidate_eval < best_eval or random.random() < math.exp((current_eval - candidate_eval) / t):
+            current, current_eval = candidate, candidate_eval
+            if candidate_eval < best_eval:
+                best, best_eval = candidate, candidate_eval
+                scores.append(best_eval)
 
-        T *= alpha  # Continue cooling down (optional since you're only taking best solutions)
+        if i % 10 == 0:
+            print(f"Iteration {i}, Temperature {t:.3f}, Best Evaluation {best_eval:.5f}")
+
+    return best, best_eval, scores
 
 
 def get_nums(nummap):
