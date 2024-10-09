@@ -53,10 +53,21 @@ def validate_board(board, order):
 
     create_lit_map(lit_map, board)
 
-    for i, j in order:
+    goodLights = []
+    badLights = []
+
+    for i, j in order[0]:
         if lit_map[i][j] == 0:
             board[i][j] = 'L'
+            goodLights.append((i, j))
             illuminate_from_light(lit_map, i , j)
+    for i, j in order[1]:
+        if lit_map[i][j] == 0:
+            board[i][j] = 'L'
+            badLights.append((i, j))
+            illuminate_from_light(lit_map, i , j)
+    
+    return goodLights, badLights
 
 def greedy_smart_random(board):
     lit_map = np.zeros((len(board), len(board[0])))

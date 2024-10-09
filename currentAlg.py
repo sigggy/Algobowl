@@ -90,7 +90,7 @@ def get_locations(light_map):
                 notimportant.append((i, j))
     random.shuffle(notimportant)
     random.shuffle(important)
-    return notimportant + important 
+    return notimportant, important 
 
 
 def main():
