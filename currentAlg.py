@@ -10,8 +10,9 @@ from printer import *
 from betterGreedy import *
 import random
 import numpy as np
+sys.setrecursionlimit(150000000)
 
-def remove_random_Ls(grid, light_map, num_to_remove=5):
+def remove_random_Ls(grid, light_map, num_to_remove=2):
     for i in range(len(light_map)):
         for j in range(len(light_map[0])):
             if light_map[i][j]:
@@ -34,32 +35,41 @@ def remove_random_Ls(grid, light_map, num_to_remove=5):
     return grid
 
 def generate_neighbor(grid, light_map):
-    return remove_random_Ls(grid, light_map)
+    new_grid = copy.deepcopy(grid)
+    new_light_map = copy.deepcopy(light_map)
+
+    new_grid = remove_random_Ls(new_grid, new_light_map)
+    validate_board(new_grid, get_locations(new_light_map))  
+
+    return new_grid, new_light_map
 
 
 def simulated_annealing(violations, grid, light_map, T_initial, T_final, alpha):    
     best = grid
+    best_map = light_map
+    best_eval = violations
+    current, current_eval, current_map = best, best_eval, best_map
     T = T_initial
+    scores = []
 
-    while T > T_final:
-        best_light = (None, None)
-        best_neighbor_energy = 0
-        for _ in range(1000):  # Number of iterations at each temperature step
-            random_num = random.choice(num_list)
-            neighbor_energy, after_config, before_config = generate_neighbor(random_num)
+    for i in range(1):
+        t = T / float(i + 1)
 
-            # Always take the lowest energy state (strict improvement)
-            if neighbor_energy < best_neighbor_energy:  # If neighbor is better, update the best state
-                best_light = (random_num, after_config)
-                best_energy = neighbor_energy
-            # TODO  Not sure if this is right 
-            random_num.configure(before_config)
-        
-        if best_light[0]:
-            # TODO Not sure if this is right 
-            best_light[0].configure(best_light[1])
+        candidate, candidate_map = generate_neighbor(current, best_map)
+        candidate_eval = determine_violations(candidate)
 
-        T *= alpha  # Continue cooling down (optional since you're only taking best solutions)
+        if candidate_eval < best_eval or random.random() < math.exp((current_eval - candidate_eval) / t):
+            current, current_eval, current_map = candidate, candidate_eval, current_map
+            if candidate_eval < best_eval:
+                best, best_eval, best_map = candidate, candidate_eval, candidate_map
+                scores.append(best_eval)
+
+        if i % 10 == 0:
+            print(f"Iteration {i}, Temperature {t:.3f}, Best Evaluation {best_eval:.5f}")
+
+    return best, best_eval, scores
+
+   
 
 
 def get_nums(nummap):
@@ -93,45 +103,45 @@ def get_locations(light_map):
     return notimportant + important 
 
 
+import copy
+
 def main():
-    _, retMap = get_input_data(sys.argv[1]) # read input
+    _, retMap = get_input_data(sys.argv[1])  
 
+    best_map = None
+    best_violations = float('inf')  
+    best_light_map = None
+
+    for _ in range(20):
+        lightmap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
+        nummap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
+        map = find_important_squares(retMap, lightmap, nummap)
+        num_list = find_collisions(retMap, map, nummap, lightmap)
+
+        num_list_greedy = get_nums(nummap)  
+
+        simple_greedy(num_list_greedy)  
+
+        update_map(lightmap, map)  
+
+        for line in map:
+            print("".join(line))
+
+        validate_board(map, get_locations(lightmap)) 
+
+        violations = determine_violations(map)
+
+        if violations < best_violations:
+            best_violations = violations
+            best_map = copy.deepcopy(map)  
+            best_light_map = copy.deepcopy(lightmap)  
+    before_violations = violations
     
-    # create graph
-    lightmap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
-    nummap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
-    map = find_important_squares(retMap, lightmap, nummap)
-    num_list = find_collisions(retMap, map, nummap, lightmap)
+    output_map, output_violations, scores = simulated_annealing(best_violations, best_map, best_light_map, T_initial=100, T_final=1, alpha=0.95)
+    print(f' violations before anneal {before_violations}')
+    print(f' violations after anneal {violations}')
+    write_output(output_map, output_violations)
 
-    num_list_greedy = get_nums(nummap) # get sorted list of nums
-
-    simple_greedy(num_list_greedy)
-
-    # for num in num_list: # get random configs to start
-    #     num.alter_config()
-
-    update_map(lightmap, map)
-
-    violations = determine_violations(map)
-    print(f'Violations before annealing {violations}')
-    simulated_annealing(violations, num_list, T_initial=100, T_final=1, alpha=0.95)
-
-    update_map(lightmap, map)
-
-    for line in map:
-        print("".join(line))
-
-    validate_board(map, get_locations(lightmap))
-
-    write_output(map, violations)
-    
-    print(f'Violations after annealing {violations}')
-
-    violations = determine_violations(map)
-    print(f'Violations at the very end {violations}')
-
-
-    write_output(map, violations)
 
 if __name__ == "__main__":
     main()
