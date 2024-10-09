@@ -53,7 +53,7 @@ def generate_neighbor(grid):
     new_grid = copy.deepcopy(grid)
 
     new_grid = add_random_Ls(new_grid)  
-    new_grid = remove_random_Ls(new_grid)  
+    #new_grid = remove_random_Ls(new_grid)  
 
     new_light_map = [[None for _ in range(len(new_grid[0]))] for _ in range(len(new_grid))]
     new_nummap = [[None for _ in range(len(new_grid[0]))] for _ in range(len(new_grid))]
@@ -79,8 +79,8 @@ def simulated_annealing(violations, grid, T_initial, T_final, alpha):
     T = T_initial
     scores = [best_eval]
 
-    for i in range(500):
-        t = T_initial * (alpha ** i)
+    for i in range(1):
+        t = T_initial / alpha 
 
         candidate, candidate_eval = generate_neighbor(current)
         scores.append(candidate_eval)
@@ -98,6 +98,8 @@ def simulated_annealing(violations, grid, T_initial, T_final, alpha):
    
 
 
+import random
+
 def get_nums(nummap):
     nums_list = []
     for i in range(len(nummap)):
@@ -105,11 +107,15 @@ def get_nums(nummap):
             if nummap[i][j]:
                 nums_list.append(nummap[i][j])
 
-    # Sort nums_list by `num` attribute in descending order
-    sorted_nums_list = sorted(nums_list, key=lambda x: x.num, reverse=True)
-    
-    #return sorted_nums_list
+    # Add a small random noise to the `num` attribute to introduce randomness
+    random_noise_factor = .1  # Adjust this factor to control randomness level
+    nums_list_with_noise = [(num, num.num + random.uniform(-random_noise_factor, random_noise_factor)) for num in nums_list]
+
+    # Sort nums_list by the noisy value in descending order
+    sorted_nums_list = [num for num, _ in sorted(nums_list_with_noise, key=lambda x: x[1], reverse=True)]
+
     return sorted_nums_list
+
 
 def simple_greedy(list_nums):
     for num in list_nums:
@@ -166,6 +172,7 @@ def main():
     before_violations = violations
     
     T_initial = np.std(violations_list)
+    #T_initial = 200
     output_map, output_violations, scores = simulated_annealing(best_violations, best_map, T_initial, T_final=0.5, alpha=0.95)
     print(f' violations before anneal {before_violations}')
     print(f' violations after anneal {violations}')
