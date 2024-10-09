@@ -44,7 +44,7 @@ def simulated_annealing(violations, num_list, T_initial, T_final, alpha):
     while T > T_final:
         best_light = (None, None)
         best_neighbor_energy = 0
-        for _ in range(100):  # Number of iterations at each temperature step
+        for _ in range(1000):  # Number of iterations at each temperature step
             random_num = random.choice(num_list)
             neighbor_energy, after_config, before_config = generate_neighbor(random_num)
 
@@ -107,20 +107,26 @@ def main():
 
     simple_greedy(num_list_greedy)
 
+    # for num in num_list: # get random configs to start
+    #     num.alter_config()
+
     update_map(lightmap, map)
 
     violations = determine_violations(map)
     print(f'Violations before annealing {violations}')
-    print(f'num list')
-    print(num_list)
     simulated_annealing(violations, num_list, T_initial=100, T_final=1, alpha=0.95)
 
     update_map(lightmap, map)
 
+    for line in map:
+        print("".join(line))
+
     validate_board(map, get_locations(lightmap))
 
-
+    write_output(map, violations)
+    
     print(f'Violations after annealing {violations}')
+
     violations = determine_violations(map)
     print(f'Violations at the very end {violations}')
 
