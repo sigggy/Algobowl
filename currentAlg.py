@@ -12,11 +12,7 @@ import random
 import numpy as np
 sys.setrecursionlimit(150000000)
 
-def remove_random_Ls(grid, light_map, num_to_remove=2):
-    for i in range(len(light_map)):
-        for j in range(len(light_map[0])):
-            if light_map[i][j]:
-                grid[i][j] = 'L'
+def remove_random_Ls(grid, num_to_remove=2):
     # Get all positions of "L" in the grid
     positions = [(i, j) for i in range(len(grid)) for j in range(len(grid[i])) if grid[i][j] == "L"]
     
@@ -34,34 +30,64 @@ def remove_random_Ls(grid, light_map, num_to_remove=2):
     
     return grid
 
-def generate_neighbor(grid, light_map):
+def add_random_Ls(grid, num_to_add=2):
+    # Get all empty positions "." in the grid
+    empty_positions = [(i, j) for i in range(len(grid)) for j in range(len(grid[i])) if grid[i][j] == "."]
+    
+    # Randomly select up to `num_to_add` positions to place "L"
+    if len(empty_positions) < num_to_add:
+        print(f"Warning: Not enough empty positions to add 'L'. Attempting to add {num_to_add}, but found only {len(empty_positions)}.")
+        num_to_add = len(empty_positions)  # Adjust to the maximum available empty positions
+    
+    # Randomly sample the positions to place "L"
+    positions_to_add = random.sample(empty_positions, num_to_add)
+    
+    # Replace "." with "L"
+    for i, j in positions_to_add:
+        grid[i][j] = "L"
+    
+    return grid
+
+
+def generate_neighbor(grid):
     new_grid = copy.deepcopy(grid)
-    new_light_map = copy.deepcopy(light_map)
 
-    new_grid = remove_random_Ls(new_grid, new_light_map)
-    validate_board(new_grid, get_locations(new_light_map))  
+    new_grid = add_random_Ls(new_grid)  
+    new_grid = remove_random_Ls(new_grid)  
 
-    return new_grid, new_light_map
+    new_light_map = [[None for _ in range(len(new_grid[0]))] for _ in range(len(new_grid))]
+    new_nummap = [[None for _ in range(len(new_grid[0]))] for _ in range(len(new_grid))]
 
 
-def simulated_annealing(violations, grid, light_map, T_initial, T_final, alpha):    
+    neighbor = find_important_squares(new_grid, new_light_map, new_nummap)  
+    num_list = find_collisions(new_grid, neighbor, new_nummap, new_light_map)
+    num_list_greedy = get_nums(new_nummap) 
+    simple_greedy(num_list_greedy)  
+    update_map(new_light_map, neighbor)  
+ 
+
+    validate_board(neighbor, get_locations(new_light_map)) 
+    violations = determine_violations(neighbor)
+
+    return neighbor, violations
+
+
+def simulated_annealing(violations, grid, T_initial, T_final, alpha):    
     best = grid
-    best_map = light_map
     best_eval = violations
-    current, current_eval, current_map = best, best_eval, best_map
+    current, current_eval = best, best_eval
     T = T_initial
-    scores = []
+    scores = [best_eval]
 
-    for i in range(1):
-        t = T / float(i + 1)
+    for i in range(500):
+        t = T_initial * (alpha ** i)
 
-        candidate, candidate_map = generate_neighbor(current, best_map)
-        candidate_eval = determine_violations(candidate)
-
+        candidate, candidate_eval = generate_neighbor(current)
+        scores.append(candidate_eval)
         if candidate_eval < best_eval or random.random() < math.exp((current_eval - candidate_eval) / t):
-            current, current_eval, current_map = candidate, candidate_eval, current_map
+            current, current_eval = candidate, candidate_eval
             if candidate_eval < best_eval:
-                best, best_eval, best_map = candidate, candidate_eval, candidate_map
+                best, best_eval = candidate, candidate_eval
                 scores.append(best_eval)
 
         if i % 10 == 0:
@@ -111,6 +137,7 @@ def main():
     best_map = None
     best_violations = float('inf')  
     best_light_map = None
+    violations_list = []
 
     for _ in range(20):
         lightmap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
@@ -130,6 +157,7 @@ def main():
         validate_board(map, get_locations(lightmap)) 
 
         violations = determine_violations(map)
+        violations_list.append(violations)
 
         if violations < best_violations:
             best_violations = violations
@@ -137,9 +165,11 @@ def main():
             best_light_map = copy.deepcopy(lightmap)  
     before_violations = violations
     
-    output_map, output_violations, scores = simulated_annealing(best_violations, best_map, best_light_map, T_initial=100, T_final=1, alpha=0.95)
+    T_initial = np.std(violations_list)
+    output_map, output_violations, scores = simulated_annealing(best_violations, best_map, T_initial, T_final=0.5, alpha=0.95)
     print(f' violations before anneal {before_violations}')
     print(f' violations after anneal {violations}')
+    print(scores)
     write_output(output_map, output_violations)
 
 

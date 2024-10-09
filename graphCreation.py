@@ -21,6 +21,9 @@ def find_important_squares(board, lightmap, nummap):
 
     for i in range(len(board)):
         for j in range(len(board[0])):
+            if board[i][j] == 'L' and not lightmap[i][j]:
+                lightmap[i][j] = number_tile_light(True, i, j)
+                continue 
             if board[i][j] in important_nums:
                 if board[i][j] != '0':
                     nummap[i][j] = number_tile(i, j, board[i][j])
