@@ -11,59 +11,42 @@ from betterGreedy import *
 import random
 import numpy as np
 
-def remove_random_Ls(grid, num_to_remove=5):
-    # Get all positions of "L" in the grid
-    positions = [(i, j) for i in range(len(grid)) for j in range(len(grid[i])) if grid[i][j] == "L"]
-    
-    # Randomly select up to `num_to_remove` positions to change
-    if len(positions) < num_to_remove:
-        print(f"Warning: Not enough 'L's to remove. Attempting to remove {num_to_remove}, but found only {len(positions)}.")
-        num_to_remove = len(positions)  # Adjust to the maximum available "L"s
-    
-    # Randomly sample the positions to change
-    positions_to_remove = random.sample(positions, num_to_remove)
-    
-    # Replace "L" with "."
-    for i, j in positions_to_remove:
-        grid[i][j] = "."
-    
-    return grid
 
-def generate_neighbor(grid, badLights, GoodLights, num_bad_pops, num_good_pops):
+def generate_neighbor(grid, poss_good_lights, poss_bad_lights, badLights, goodLights, num_bad_pops, num_good_pops):
     new_grid = copy.deepcopy(grid)
 
     new_bad_lights = copy.deepcopy(badLights)
-    new_good_lights = copy.deepcopy(GoodLights)
+    new_good_lights = copy.deepcopy(goodLights)
 
-    for _ in range(len(num_bad_pops)):
+    for _ in range(num_bad_pops):
         light_pop = random.choice(new_bad_lights)
-        new_grid[light_pop[light_pop[0]][light_pop[1]]] = '.'
+        new_grid[light_pop[0]][light_pop[1]] = '.'
         new_bad_lights.remove(light_pop)
-    for _ in range(len(num_good_pops)):
+    for _ in range(num_good_pops):
         light_pop = random.choice(new_good_lights)
-        new_grid[light_pop[light_pop[0]][light_pop[1]]] = '.'
-        new_bad_lights.remove(random.choice(new_good_lights))
+        new_grid[light_pop[0]][light_pop[1]] = '.'
+        new_good_lights.remove(light_pop)
+
+    validate_board(new_grid, (poss_good_lights, poss_bad_lights), goodLights, badLights)
+
+    return badLights, goodLights, new_grid, len(badLights)
 
 
 
-    return badLights, GoodLights, new_grid, 
-
-
-
-def simulated_annealing(violations, badLights, goodLights, grid, T_initial, T_final, alpha):    
+def simulated_annealing(poss_good_lights, poss_bad_lights, badLights, goodLights, grid, T_initial, T_final, alpha):    
     best = grid
-    best_eval = violations
-    current, current_eval = best, best_eval
+    best_eval = len(badLights)
+    current, current_eval, current_bad_lights, current_good_lights = best, best_eval, badLights, goodLights
     T = T_initial
     scores = [best_eval]
 
-    for i in range(1):
+    for i in range(100):
         t = T_initial / alpha 
 
-        candidate, candidate_eval = generate_neighbor(current)
+        candidate_bad_lights, candidate_good_lights, candidate, candidate_eval = generate_neighbor(current, poss_good_lights, poss_bad_lights, current_bad_lights, current_good_lights, 10, 10)
         scores.append(candidate_eval)
         if candidate_eval < best_eval or random.random() < math.exp((current_eval - candidate_eval) / t):
-            current, current_eval = candidate, candidate_eval
+            current, current_eval, current_bad_lights, current_good_lights = candidate, candidate_eval, candidate_bad_lights, candidate_good_lights
             if candidate_eval < best_eval:
                 best, best_eval = candidate, candidate_eval
                 scores.append(best_eval)
@@ -71,7 +54,7 @@ def simulated_annealing(violations, badLights, goodLights, grid, T_initial, T_fi
         if i % 10 == 0:
             print(f"Iteration {i}, Temperature {t:.3f}, Best Evaluation {best_eval:.5f}")
 
-    return best, best_eval, scores
+    return best, scores
 
 
 def get_nums(nummap):
@@ -125,11 +108,6 @@ def main():
 
         update_map(lightmap, map)  
 
-        for line in map:
-            print("".join(line))
-
-        validate_board(map, get_locations(lightmap)) 
-
         violations = determine_violations(map)
         violations_list.append(violations)
 
@@ -137,13 +115,21 @@ def main():
             best_violations = violations
             best_map = copy.deepcopy(map)  
             best_light_map = copy.deepcopy(lightmap)  
-    before_violations = violations
     
     T_initial = np.std(violations_list)
     #T_initial = 200
-    output_map, output_violations, scores = simulated_annealing(best_violations, best_map, T_initial, T_final=0.5, alpha=0.95)
+
+    poss_good_lights, poss_bad_lights = get_locations(best_light_map)
+
+    goodLights, badLights = validate_board(best_map, get_locations(best_light_map), [], []) 
+
+    before_violations = determine_violations(best_map)
+
+    output_map, scores = simulated_annealing(poss_good_lights, poss_bad_lights, badLights, goodLights, best_map, T_initial, T_final=0.5, alpha=0.95)
+
     print(f' violations before anneal {before_violations}')
-    print(f' violations after anneal {violations}')
+    output_violations = determine_violations(output_map)
+    print(f' violations after anneal {output_violations}')
     print(scores)
     write_output(output_map, output_violations)
 

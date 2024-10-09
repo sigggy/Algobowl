@@ -48,13 +48,10 @@ def greedy_smart(board): # takes empty board
                 board[i][j] = 'L'
                 illuminate_from_light(lit_map, i , j)
 
-def validate_board(board, order):
+def validate_board(board, order, goodLights, badLights):
     lit_map = np.zeros((len(board), len(board[0])))
 
     create_lit_map(lit_map, board)
-
-    goodLights = []
-    badLights = []
 
     for i, j in order[0]:
         if lit_map[i][j] == 0:
