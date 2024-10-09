@@ -106,40 +106,46 @@ def get_locations(light_map):
 
 
 def main():
-    _, retMap = get_input_data(sys.argv[1]) # read input
+    _, retMap = get_input_data(sys.argv[1])  
 
+    best_map = None
+    best_violations = float('inf')  
+    best_light_map = None
+    violations_list = []
+
+    for _ in range(20):
+        lightmap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
+        nummap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
+        map = find_important_squares(retMap, lightmap, nummap)
+        num_list = find_collisions(retMap, map, nummap, lightmap)
+
+        num_list_greedy = get_nums(nummap)  
+
+        simple_greedy(num_list_greedy)  
+
+        update_map(lightmap, map)  
+
+        for line in map:
+            print("".join(line))
+
+        validate_board(map, get_locations(lightmap)) 
+
+        violations = determine_violations(map)
+        violations_list.append(violations)
+
+        if violations < best_violations:
+            best_violations = violations
+            best_map = copy.deepcopy(map)  
+            best_light_map = copy.deepcopy(lightmap)  
+    before_violations = violations
     
-    # create graph
-    lightmap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
-    nummap = [[None for _ in range(len(retMap[0]))] for _ in range(len(retMap))]
-    map = find_important_squares(retMap, lightmap, nummap)
-    num_list = find_collisions(retMap, map, nummap, lightmap)
-
-    num_list_greedy = get_nums(nummap) # get sorted list of nums
-
-    simple_greedy(num_list_greedy)
-
-    update_map(lightmap, map)
-
-    validate_board(map, get_locations(lightmap))
-
-    violations = determine_violations(map)
-    print(f'Violations before annealing {violations}')
-    simulated_annealing(violations, num_list, T_initial=100, T_final=1, alpha=0.95)
-
-    update_map(lightmap, map)
-
-    validate_board(map, get_locations(lightmap))
-
-    write_output(map, violations)
-    
-    print(f'Violations after annealing {violations}')
-
-    violations = determine_violations(map)
-    print(f'Violations at the very end {violations}')
-
-
-    write_output(map, violations)
+    T_initial = np.std(violations_list)
+    #T_initial = 200
+    output_map, output_violations, scores = simulated_annealing(best_violations, best_map, T_initial, T_final=0.5, alpha=0.95)
+    print(f' violations before anneal {before_violations}')
+    print(f' violations after anneal {violations}')
+    print(scores)
+    write_output(output_map, output_violations)
 
 if __name__ == "__main__":
     main()
