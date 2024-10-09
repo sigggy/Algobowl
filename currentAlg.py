@@ -11,7 +11,11 @@ from betterGreedy import *
 import random
 import numpy as np
 
-def remove_random_Ls(grid, num_to_remove=5):
+def remove_random_Ls(grid, light_map, num_to_remove=5):
+    for i in range(len(light_map)):
+        for j in range(len(light_map[0])):
+            if light_map[i][j]:
+                grid[i][j] = 'L'
     # Get all positions of "L" in the grid
     positions = [(i, j) for i in range(len(grid)) for j in range(len(grid[i])) if grid[i][j] == "L"]
     
@@ -29,16 +33,12 @@ def remove_random_Ls(grid, num_to_remove=5):
     
     return grid
 
-def generate_neighbor(light):
-    before_config = light.get_curr_config()
-    before = light.get_vio_for_light()
-    after_config = light.alter_config()
-    after = light.get_vio_for_light()
-
-    return after - before, after_config, before_config
+def generate_neighbor(grid, light_map):
+    return remove_random_Ls(grid, light_map)
 
 
-def simulated_annealing(violations, num_list, T_initial, T_final, alpha):    
+def simulated_annealing(violations, grid, light_map, T_initial, T_final, alpha):    
+    best = grid
     T = T_initial
 
     while T > T_final:
