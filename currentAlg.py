@@ -29,30 +29,28 @@ def remove_random_Ls(grid, num_to_remove=5):
     
     return grid
 
-def generate_neighbor(grid):
+def generate_neighbor(grid, badLights, GoodLights, num_bad_pops, num_good_pops):
     new_grid = copy.deepcopy(grid)
 
-    new_grid = add_random_Ls(new_grid)  
-    #new_grid = remove_random_Ls(new_grid)  
+    new_bad_lights = copy.deepcopy(badLights)
+    new_good_lights = copy.deepcopy(GoodLights)
 
-    new_light_map = [[None for _ in range(len(new_grid[0]))] for _ in range(len(new_grid))]
-    new_nummap = [[None for _ in range(len(new_grid[0]))] for _ in range(len(new_grid))]
-
-
-    neighbor = find_important_squares(new_grid, new_light_map, new_nummap)  
-    num_list = find_collisions(new_grid, neighbor, new_nummap, new_light_map)
-    num_list_greedy = get_nums(new_nummap) 
-    simple_greedy(num_list_greedy)  
-    update_map(new_light_map, neighbor)  
- 
-
-    validate_board(neighbor, get_locations(new_light_map)) 
-    violations = determine_violations(neighbor)
-
-    return neighbor, violations
+    for _ in range(len(num_bad_pops)):
+        light_pop = random.choice(new_bad_lights)
+        new_grid[light_pop[light_pop[0]][light_pop[1]]] = '.'
+        new_bad_lights.remove(light_pop)
+    for _ in range(len(num_good_pops)):
+        light_pop = random.choice(new_good_lights)
+        new_grid[light_pop[light_pop[0]][light_pop[1]]] = '.'
+        new_bad_lights.remove(random.choice(new_good_lights))
 
 
-def simulated_annealing(violations, grid, T_initial, T_final, alpha):    
+
+    return badLights, GoodLights, new_grid, 
+
+
+
+def simulated_annealing(violations, badLights, goodLights, grid, T_initial, T_final, alpha):    
     best = grid
     best_eval = violations
     current, current_eval = best, best_eval
@@ -121,19 +119,15 @@ def main():
 
     simple_greedy(num_list_greedy)
 
-    # for num in num_list: # get random configs to start
-    #     num.alter_config()
-
     update_map(lightmap, map)
+
+    validate_board(map, get_locations(lightmap))
 
     violations = determine_violations(map)
     print(f'Violations before annealing {violations}')
     simulated_annealing(violations, num_list, T_initial=100, T_final=1, alpha=0.95)
 
     update_map(lightmap, map)
-
-    for line in map:
-        print("".join(line))
 
     validate_board(map, get_locations(lightmap))
 
