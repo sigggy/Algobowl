@@ -18,11 +18,11 @@ def generate_neighbor(grid, poss_good_lights, poss_bad_lights, badLights, goodLi
     new_bad_lights = copy.deepcopy(badLights)
     new_good_lights = copy.deepcopy(goodLights)
 
-    for _ in range(num_bad_pops):
+    for _ in range(min(num_bad_pops, len(new_bad_lights))):
         light_pop = random.choice(new_bad_lights)
         new_grid[light_pop[0]][light_pop[1]] = '.'
         new_bad_lights.remove(light_pop)
-    for _ in range(num_good_pops):
+    for _ in range(min(num_good_pops, len(new_good_lights))):
         light_pop = random.choice(new_good_lights)
         new_grid[light_pop[0]][light_pop[1]] = '.'
         new_good_lights.remove(light_pop)
