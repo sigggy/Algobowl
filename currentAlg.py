@@ -27,9 +27,9 @@ def generate_neighbor(grid, poss_good_lights, poss_bad_lights, badLights, goodLi
         new_grid[light_pop[0]][light_pop[1]] = '.'
         new_good_lights.remove(light_pop)
 
-    validate_board(new_grid, (poss_good_lights, poss_bad_lights), goodLights, badLights)
+    validate_board(new_grid, (poss_good_lights, poss_bad_lights), new_good_lights, new_bad_lights)
 
-    return badLights, goodLights, new_grid, len(badLights)
+    return new_bad_lights, new_good_lights, new_grid, len(new_bad_lights)
 
 
 
@@ -40,10 +40,10 @@ def simulated_annealing(poss_good_lights, poss_bad_lights, badLights, goodLights
     T = T_initial
     scores = [best_eval]
 
-    for i in range(100):
+    for i in range(1000):
         t = T_initial / alpha 
 
-        candidate_bad_lights, candidate_good_lights, candidate, candidate_eval = generate_neighbor(current, poss_good_lights, poss_bad_lights, current_bad_lights, current_good_lights, 10, 10)
+        candidate_bad_lights, candidate_good_lights, candidate, candidate_eval = generate_neighbor(current, poss_good_lights, poss_bad_lights, current_bad_lights, current_good_lights, 5, 5)
         scores.append(candidate_eval)
         if candidate_eval < best_eval or random.random() < math.exp((current_eval - candidate_eval) / t):
             current, current_eval, current_bad_lights, current_good_lights = candidate, candidate_eval, candidate_bad_lights, candidate_good_lights
