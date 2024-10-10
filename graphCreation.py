@@ -7,6 +7,13 @@ from graph import *
 import random
 from itertools import permutations
 
+def update_light_map(board, light_map):
+    for i in range(len(board)):
+        for j in range(len(board[0])):
+            if board[i][j] == 'L' and not light_map[i][j]:
+                light_map[i][j] = number_tile_light(True, i, j)
+                continue 
+
 def find_important_squares(board, lightmap, nummap):
     retMap = copy.deepcopy(board)
     
